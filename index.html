@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+    <meta name="theme-color" content="#17324d">
+
+    <title>MolBot - Mol Hesaplama Asistanı</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #eef3f8;
+            font-family: "Segoe UI", Arial, sans-serif;
+            color: #17324d;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        /* ÜST ALAN */
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 5px 15px 5px;
+        }
+
+        .logo {
+            width: 58px;
+            height: 58px;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+
+        .header-text {
+            flex: 1;
+            text-align: center;
+        }
+
+        .title {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            margin-top: 2px;
+            color: #607080;
+            font-size: 14px;
+        }
+
+        /* ANA PANEL */
+
+        .panel {
+            background: white;
+            border-radius: 18px;
+            padding: 22px;
+            box-shadow: 0 5px 20px rgba(23, 50, 77, 0.10);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #38536b;
+        }
+
+        select,
+        input {
+            width: 100%;
+            height: 48px;
+            border: 1px solid #cbd7e2;
+            border-radius: 10px;
+            padding: 0 13px;
+            font-size: 16px;
+            color: #17324d;
+            background: white;
+            outline: none;
+        }
+
+        select:focus,
+        input:focus {
+            border-color: #527da5;
+            box-shadow: 0 0 0 3px rgba(82, 125, 165, 0.12);
+        }
+
+        .form-group {
+            margin-bottom: 17px;
+        }
+
+        /* BUTONLAR */
+
+        .button-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        button {
+            border: none;
+            border-radius: 10px;
+            height: 48px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .calculate {
+            flex: 1;
+            background: #17324d;
+            color: white;
+        }
+
+        .calculate:active {
+            transform: scale(0.98);
+        }
+
+        .clear {
+            width: 110px;
+            background: #e7edf3;
+            color: #17324d;
+        }
+
+        .clear:active {
+            transform: scale(0.98);
+        }
+
+        /* SONUÇ */
+
+        .result-title {
+            margin-top: 22px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #38536b;
+        }
+
+        .result-box {
+            min-height: 120px;
+            padding: 18px;
+            border-radius: 12px;
+            background: #f3f7fa;
+            border: 1px solid #d8e2eb;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+            text-align: center;
+            overflow-wrap: anywhere;
+        }
+
+        .result-main {
+            font-size: 22px;
+            font-weight: 700;
+            color: #17324d;
+            line-height: 1.45;
+        }
+
+        .result-detail {
+            margin-top: 8px;
+            font-size: 14px;
+            color: #687989;
+            line-height: 1.5;
+        }
+
+        .constants {
+            margin-top: 15px;
+            font-size: 12px;
+            color: #71808f;
+            line-height: 1.6;
+        }
+
+        /* BİLGİ */
+
+        .info {
+            margin-top: 16px;
+            padding: 14px;
+            border-radius: 10px;
+            background: #eef4f8;
+            color: #52687a;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .info-title {
+            font-weight: 700;
+            color: #17324d;
+            margin-bottom: 4px;
+        }
+
+        /* FOOTER */
+
+        .footer {
+            text-align: center;
+            margin-top: 16px;
+            padding-bottom: 8px;
+            color: #71808f;
+            font-size: 12px;
+        }
+
+        /* MOBİL */
+
+        @media (max-width: 480px) {
+
+            .container {
+                padding: 10px;
+            }
+
+            .header {
+                padding-top: 5px;
+            }
+
+            .logo {
+                width: 52px;
+                height: 52px;
+            }
+
+            .title {
+                font-size: 24px;
+            }
+
+            .subtitle {
+                font-size: 12px;
+            }
+
+            .panel {
+                padding: 17px;
+                border-radius: 15px;
+            }
+
+            select,
+            input {
+                height: 50px;
+                font-size: 16px;
+            }
+
+            .result-box {
+                min-height: 130px;
+            }
+
+            .result-main {
+                font-size: 20px;
+            }
+
+            .button-row {
+                flex-direction: column;
+            }
+
+            .clear {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 350px) {
+
+            .logo {
+                width: 45px;
+                height: 45px;
+            }
+
+            .title {
+                font-size: 21px;
+            }
+
+            .subtitle {
+                font-size: 11px;
+            }
+
+            .panel {
+                padding: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- BAŞLIK -->
+
+    <div class="header">
+
+        <img
+            src="logo.png"
+            class="logo"
+            alt="Okul Logosu"
+            onerror="this.style.display='none'"
+        >
+
+        <div class="header-text">
+            <h1 class="title">MOLBOT</h1>
+            <div class="subtitle">
+                Mol Hesaplama Asistanı
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- ANA PANEL -->
+
+    <div class="panel">
+
+        <!-- İŞLEM -->
+
+        <div class="form-group">
+
+            <label for="islem">
+                İşlem Seçiniz
+            </label>
+
+            <select id="islem" onchange="alanlariGuncelle()">
+
+                <option value="mol_tanecik">
+                    Mol → Tanecik Sayısı
+                </option>
+
+                <option value="tanecik_mol">
+                    Tanecik Sayısı → Mol
+                </option>
+
+                <option value="gram_mol">
+                    Gram → Mol
+                </option>
+
+                <option value="mol_gram">
+                    Mol → Gram
+                </option>
+
+                <option value="gaz_mol">
+                    Gaz Litresi → Mol
+                </option>
+
+                <option value="mol_gaz">
+                    Mol → Gaz Litresi
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- DEĞER -->
+
+        <div class="form-group">
+
+            <label id="degerLabel" for="deger">
+                Mol Değeri
+            </label>
+
+            <input
+                type="text"
+                id="deger"
+                inputmode="decimal"
+                placeholder="Örneğin: 2"
+            >
+
+        </div>
+
+
+        <!-- MOLAR KÜTLE -->
+
+        <div
+            class="form-group"
+            id="molKutlesiAlan"
+            style="display:none;"
+        >
+
+            <label for="molKutlesi">
+                Molar Kütle (g/mol)
+            </label>
+
+            <input
+                type="text"
+                id="molKutlesi"
+                inputmode="decimal"
+                placeholder="Örneğin: 18"
+            >
+
+        </div>
+
+
+        <!-- BUTONLAR -->
+
+        <div class="button-row">
+
+            <button
+                class="calculate"
+                onclick="hesapla()"
+            >
+                HESAPLA
+            </button>
+
+            <button
+                class="clear"
+                onclick="temizle()"
+            >
+                TEMİZLE
+            </button>
+
+        </div>
+
+
+        <!-- SONUÇ -->
+
+        <div class="result-title">
+            SONUÇ
+        </div>
+
+        <div class="result-box">
+
+            <div
+                class="result-main"
+                id="sonuc"
+            >
+                Sonuç burada gösterilecek
+            </div>
+
+            <div
+                class="result-detail"
+                id="sonucDetay"
+            ></div>
+
+        </div>
+
+
+        <!-- SABİTLER -->
+
+        <div class="constants">
+
+            <strong>Avogadro Sayısı:</strong>
+            6,022 × 10²³
+
+            <br>
+
+            <strong>NŞA'da molar gaz hacmi:</strong>
+            22,4 L/mol
+
+        </div>
+
+
+        <!-- BİLGİ -->
+
+        <div class="info">
+
+            <div class="info-title">
+                ⓘ MolBot Hakkında
+            </div>
+
+            Bu uygulama Ermişler Cumhuriyet Anadolu Lisesi
+            öğrencileri tarafından MOL GÜNÜ etkinliği için
+            geliştirilmiştir.
+
+            <br><br>
+
+            MolBot; mol, tanecik sayısı, gram ve gaz hacmi
+            arasındaki dönüşümleri kolaylaştırmak amacıyla
+            geliştirilmiştir.
+
+        </div>
+
+    </div>
+
+
+    <!-- FOOTER -->
+
+    <div class="footer">
+        Mol Günü • Bilişim Teknolojileri
+    </div>
+
+</div>
+
+
+<script>
+
+    const AVOGADRO = 6.022e23;
+    const GAZ_MOL_HACMI = 22.4;
+
+
+    /* --------------------------------
+       TÜRKÇE SAYI DÖNÜŞÜMÜ
+    -------------------------------- */
+
+    function sayiOku(deger) {
+
+        deger = deger.trim();
+
+        if (deger === "") {
+            return NaN;
+        }
+
+        /*
+         Virgülü noktaya çevir.
+         */
+
+        deger = deger.replace(",", ".");
+
+        return Number(deger);
+    }
+
+
+    /* --------------------------------
+       ÜST SİMGELER
+    -------------------------------- */
+
+    function ustSimge(sayi) {
+
+        const ustler = {
+
+            "0": "⁰",
+            "1": "¹",
+            "2": "²",
+            "3": "³",
+            "4": "⁴",
+            "5": "⁵",
+            "6": "⁶",
+            "7": "⁷",
+            "8": "⁸",
+            "9": "⁹",
+            "-": "⁻"
+
+        };
+
+        return String(sayi)
+            .split("")
+            .map(rakam => ustler[rakam] || rakam)
+            .join("");
+    }
+
+
+    /* --------------------------------
+       BİLİMSEL GÖSTERİM
+    -------------------------------- */
+
+    function bilimselGosterim(sayi) {
+
+        if (sayi === 0) {
+            return "0";
+        }
+
+        const bilimsel = sayi.toExponential(4);
+
+        let [katsayi, us] = bilimsel.split("e");
+
+        katsayi = katsayi.replace(".", ",");
+
+        us = parseInt(us);
+
+        return katsayi + " × 10" + ustSimge(us);
+    }
+
+
+    /* --------------------------------
+       NORMAL SAYI GÖSTERİMİ
+    -------------------------------- */
+
+    function sayiGoster(sayi) {
+
+        if (sayi === 0) {
+            return "0";
+        }
+
+        if (
+            Math.abs(sayi) >= 1e5 ||
+            Math.abs(sayi) < 1e-3
+        ) {
+
+            return bilimselGosterim(sayi);
+
+        }
+
+        let metin = sayi
+            .toFixed(6)
+            .replace(/\.?0+$/, "");
+
+        return metin.replace(".", ",");
+    }
+
+
+    /* --------------------------------
+       ALANLARI GÜNCELLE
+    -------------------------------- */
+
+    function alanlariGuncelle() {
+
+        const islem =
+            document.getElementById("islem").value;
+
+        const degerLabel =
+            document.getElementById("degerLabel");
+
+        const deger =
+            document.getElementById("deger");
+
+        const molKutlesiAlan =
+            document.getElementById("molKutlesiAlan");
+
+        const molKutlesi =
+            document.getElementById("molKutlesi");
+
+
+        /*
+        Molar kütle gereken işlemler
+        */
+
+        if (
+            islem === "gram_mol" ||
+            islem === "mol_gram"
+        ) {
+
+            molKutlesiAlan.style.display = "block";
+
+        } else {
+
+            molKutlesiAlan.style.display = "none";
+
+        }
+
+
+        /*
+        Değer alanının açıklaması
+        */
+
+        switch (islem) {
+
+            case "mol_tanecik":
+
+                degerLabel.textContent =
+                    "Mol Değeri";
+
+                deger.placeholder =
+                    "Örneğin: 2";
+
+                break;
+
+
+            case "tanecik_mol":
+
+                degerLabel.textContent =
+                    "Tanecik Sayısı";
+
+                deger.placeholder =
+                    "Örneğin: 6,022e23";
+
+                break;
+
+
+            case "gram_mol":
+
+                degerLabel.textContent =
+                    "Madde Miktarı (g)";
+
+                deger.placeholder =
+                    "Örneğin: 36";
+
+                break;
+
+
+            case "mol_gram":
+
+                degerLabel.textContent =
+                    "Mol Değeri";
+
+                deger.placeholder =
+                    "Örneğin: 2";
+
+                break;
+
+
+            case "gaz_mol":
+
+                degerLabel.textContent =
+                    "Gaz Hacmi (L)";
+
+                deger.placeholder =
+                    "Örneğin: 44,8";
+
+                break;
+
+
+            case "mol_gaz":
+
+                degerLabel.textContent =
+                    "Mol Değeri";
+
+                deger.placeholder =
+                    "Örneğin: 2";
+
+                break;
+
+        }
+
+    }
+
+
+    /* --------------------------------
+       HESAPLAMA
+    -------------------------------- */
+
+    function hesapla() {
+
+        const islem =
+            document.getElementById("islem").value;
+
+        const deger =
+            sayiOku(
+                document.getElementById("deger").value
+            );
+
+        const sonuc =
+            document.getElementById("sonuc");
+
+        const sonucDetay =
+            document.getElementById("sonucDetay");
+
+
+        /*
+        Değer kontrolü
+        */
+
+        if (isNaN(deger)) {
+
+            sonuc.textContent =
+                "Lütfen geçerli bir değer giriniz.";
+
+            sonucDetay.textContent = "";
+
+            return;
+        }
+
+
+        /*
+        Sıfır / negatif kontrolü
+        */
+
+        if (deger < 0) {
+
+            sonuc.textContent =
+                "Negatif değer girilemez.";
+
+            sonucDetay.textContent = "";
+
+            return;
+        }
+
+
+        let hesaplanan;
+        let birim = "";
+        let detay = "";
+
+
+        /* 1
+           Mol → Tanecik
+        */
+
+        if (islem === "mol_tanecik") {
+
+            hesaplanan =
+                deger * AVOGADRO;
+
+            birim =
+                "tanecik";
+
+            detay =
+                sayiGoster(deger) +
+                " mol × 6,022 × 10²³";
+
+        }
+
+
+        /* 2
+           Tanecik → Mol
+        */
+
+        else if (islem === "tanecik_mol") {
+
+            hesaplanan =
+                deger / AVOGADRO;
+
+            birim =
+                "mol";
+
+            detay =
+                bilimselGosterim(deger) +
+                " ÷ 6,022 × 10²³";
+
+        }
+
+
+        /* 3
+           Gram → Mol
+        */
+
+        else if (islem === "gram_mol") {
+
+            const molKutlesi =
+                sayiOku(
+                    document.getElementById(
+                        "molKutlesi"
+                    ).value
+                );
+
+
+            if (
+                isNaN(molKutlesi) ||
+                molKutlesi <= 0
+            ) {
+
+                sonuc.textContent =
+                    "Molar kütleyi giriniz.";
+
+                sonucDetay.textContent = "";
+
+                return;
+            }
+
+
+            hesaplanan =
+                deger / molKutlesi;
+
+            birim =
+                "mol";
+
+            detay =
+                sayiGoster(deger) +
+                " g ÷ " +
+                sayiGoster(molKutlesi) +
+                " g/mol";
+
+        }
+
+
+        /* 4
+           Mol → Gram
+        */
+
+        else if (islem === "mol_gram") {
+
+            const molKutlesi =
+                sayiOku(
+                    document.getElementById(
+                        "molKutlesi"
+                    ).value
+                );
+
+
+            if (
+                isNaN(molKutlesi) ||
+                molKutlesi <= 0
+            ) {
+
+                sonuc.textContent =
+                    "Molar kütleyi giriniz.";
+
+                sonucDetay.textContent = "";
+
+                return;
+            }
+
+
+            hesaplanan =
+                deger * molKutlesi;
+
+            birim =
+                "g";
+
+            detay =
+                sayiGoster(deger) +
+                " mol × " +
+                sayiGoster(molKutlesi) +
+                " g/mol";
+
+        }
+
+
+        /* 5
+           Gaz Litresi → Mol
+        */
+
+        else if (islem === "gaz_mol") {
+
+            hesaplanan =
+                deger / GAZ_MOL_HACMI;
+
+            birim =
+                "mol";
+
+            detay =
+                sayiGoster(deger) +
+                " L ÷ 22,4 L/mol";
+
+        }
+
+
+        /* 6
+           Mol → Gaz Litresi
+        */
+
+        else if (islem === "mol_gaz") {
+
+            hesaplanan =
+                deger * GAZ_MOL_HACMI;
+
+            birim =
+                "L";
+
+            detay =
+                sayiGoster(deger) +
+                " mol × 22,4 L/mol";
+
+        }
+
+
+        /*
+        Sonucu göster
+        */
+
+        sonuc.innerHTML =
+            sayiGoster(hesaplanan) +
+            " " +
+            birim;
+
+        sonucDetay.textContent =
+            detay;
+
+    }
+
+
+    /* --------------------------------
+       TEMİZLE
+    -------------------------------- */
+
+    function temizle() {
+
+        document.getElementById("deger").value = "";
+
+        document.getElementById("molKutlesi").value = "";
+
+        document.getElementById("sonuc").textContent =
+            "Sonuç burada gösterilecek";
+
+        document.getElementById("sonucDetay").textContent = "";
+
+        document.getElementById("deger").focus();
+
+    }
+
+
+    /* --------------------------------
+       ENTER TUŞU
+    -------------------------------- */
+
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (event.key === "Enter") {
+
+                hesapla();
+
+            }
+
+        }
+    );
+
+
+    /*
+    İlk açılış
+    */
+
+    alanlariGuncelle();
+
+</script>
+
+</body>
+</html>
